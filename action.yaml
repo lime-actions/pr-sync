@@ -146,18 +146,22 @@ runs:
     env:
       GH_TOKEN: ${{ inputs.token }}
     run: |
+      # Save commit body
+      printf "%s\n" "$(git log -1 --pretty=format:'%B')" > .body.txt
+
       echo "::group::GH PR Create"
       gh pr create \
         --repo "${{ inputs.repo }}" \
         --head "${{ inputs.head }}" \
         --base "${{ steps.base.outputs.base }}" \
-        --fill \
+        --title "${{ steps.title.outputs.title }}" \
+        --body-file .body.txt \
         --draft
       echo "::endgroup::"
   - name: Update PR title
-    if: steps.title.outputs.title != steps.info.outputs.title
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == steps.info.outputs.baseRefName
+    if: ${{ steps.info.outputs.number
+            && steps.title.outputs.title != steps.info.outputs.title
+            && steps.base.outputs.base == steps.info.outputs.baseRefName }}
     shell: bash
     env:
       GH_TOKEN: ${{ github.token }}
