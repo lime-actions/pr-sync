@@ -28,7 +28,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         sparse-checkout: |
-          'version.txt'
+          version.txt
         sparse-checkout-cone-mode: false
     - name: GH Release
       uses: lime-actions/gh-release@latest
