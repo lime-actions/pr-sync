@@ -1,3 +1,3 @@
-# Generic Template
+# PR Sync
 
-Generic template for creating a repository
+Creates PR if it does not exist and updates the title
