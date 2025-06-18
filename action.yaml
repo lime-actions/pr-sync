@@ -10,7 +10,6 @@ inputs:
       - 'pyproject.toml'
       - 'version-file'
     default: 'version-file'
-
   version-source:
     description: Source containing the version, e.g. path to a file
     required: false
@@ -26,6 +25,11 @@ inputs:
     required: false
     type: string
     default: ${{ github.repository }}
+  dev-branch:
+    description: Development branch name
+    required: false
+    type: string
+    default: 'dev'
   release-candidate-branch:
     description: Release candidate branch name
     required: false
@@ -67,9 +71,9 @@ runs:
     run: |
       echo "::group::Selecting base"
       ${{ inputs.head == inputs.release-candidate-branch
-          && format('BASE="{0}"',
-                     inputs.default-branch)
-          || format('if [ -z $(gh api repos/{0}/branches --jq ".[].name" \
+          && format('BASE="{0}"', inputs.default-branch)
+          || inputs.head == inputs.dev-branch
+          && format('if [ -z $(gh api repos/{0}/branches --jq ".[].name" \
                                | sed -n --expression=''s\^{1}$\x\p'') ]
                     then
                       BASE="{2}"
@@ -79,7 +83,7 @@ runs:
                     inputs.repo,
                     inputs.release-candidate-branch,
                     inputs.default-branch)
-          }}
+          || format('BASE="{0}"', inputs.dev-branch)}}
       echo "$BASE"
       echo "base=$BASE" >> "$GITHUB_OUTPUT"
       echo "::endgroup::"
