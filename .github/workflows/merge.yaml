@@ -5,12 +5,10 @@ on:
   pull_request_review:
     types:
     - submitted
-    paths:
-    - version.txt
 
 jobs:
   merge:
-    if: ${{ github.event.review.state == 'approved' }}
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,9 +25,8 @@ jobs:
           .github/actions/merge/action.yaml
         sparse-checkout-cone-mode: false
     - name: Merge
-      uses: ./.github/actions/merge
+      uses: lime-actions/merge@latest
       with:
-        # paths: '(action.yaml)|(README.md)'
         version-from: 'version-file'
     - name: Merge back
       if: github.event.pull_request.base.ref
