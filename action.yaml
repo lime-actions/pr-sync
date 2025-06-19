@@ -1,4 +1,5 @@
-name: PR from Version
+name: PR sync
+description: Creates a new PR or makes sure the title is conforming
 
 inputs:
   version-from:
