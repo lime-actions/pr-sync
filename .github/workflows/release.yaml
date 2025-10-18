@@ -33,7 +33,7 @@ jobs:
           version.txt
         sparse-checkout-cone-mode: false
     - name: GH Release
-      uses: lime-actions/gh-release@latest
+      uses: lime-actions/gh-release@v1
       with:
         message: ${{ github.event.action != 'closed'
                      && 'Release candidate' || '' }}
