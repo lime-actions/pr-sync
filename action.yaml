@@ -103,14 +103,10 @@ runs:
       >> "$GITHUB_OUTPUT"
       echo "::endgroup::"
   - name: Checkout
-    if: steps.base.outputs.base == inputs.default-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.default-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
+    if: (steps.base.outputs.base == inputs.default-branch
+         || steps.base.outputs.base == inputs.release-candidate-branch )
+        && ( !steps.info.outputs.baseRefName
+            || steps.base.outputs.base == steps.info.outputs.baseRefName )
     uses: actions/checkout@v4
     with:
       sparse-checkout: |
@@ -118,14 +114,10 @@ runs:
       sparse-checkout-cone-mode: false
   - name: Get version
     id: get-version
-    if: steps.base.outputs.base == inputs.default-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.default-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
+    if: (steps.base.outputs.base == inputs.default-branch
+         || steps.base.outputs.base == inputs.release-candidate-branch )
+        && ( !steps.info.outputs.baseRefName
+            || steps.base.outputs.base == steps.info.outputs.baseRefName )
     uses: lime-actions/version@latest
     with:
       from: ${{ inputs.version-from }}
@@ -139,9 +131,9 @@ runs:
                       && format('v{0}', inputs.version
                                         || steps.get-version.outputs.version)
                       || steps.base.outputs.base == inputs.release-candidate-branch
-                      && format('RC v{0}', inputs.version
-                                           || steps.get-version.outputs.version)
-                      || steps.base.outputs.base == 'dev'
+                      && format('RC v{0}',
+                            inputs.version || steps.get-version.outputs.version)
+                      || steps.base.outputs.base == inputs.dev-branch
                       && steps.base.outputs.base }}" \
       >> "$GITHUB_OUTPUT"
       echo "::endgroup::"
