@@ -118,7 +118,7 @@ runs:
          || steps.base.outputs.base == inputs.release-candidate-branch )
         && ( !steps.info.outputs.baseRefName
             || steps.base.outputs.base == steps.info.outputs.baseRefName )
-    uses: lime-actions/version@latest
+    uses: lime-actions/version@v1
     with:
       from: ${{ inputs.version-from }}
       source: ${{ inputs.version-source }}
