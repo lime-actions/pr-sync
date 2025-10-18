@@ -134,7 +134,7 @@ runs:
                       && format('RC v{0}',
                             inputs.version || steps.get-version.outputs.version)
                       || steps.base.outputs.base == inputs.dev-branch
-                      && steps.base.outputs.base }}" \
+                      && inputs.head }}" \
       >> "$GITHUB_OUTPUT"
       echo "::endgroup::"
   - name: Debug and Create PR
