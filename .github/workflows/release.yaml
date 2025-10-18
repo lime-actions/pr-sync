@@ -27,11 +27,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        fetch-depth: 0
+        fetch-tags: true
         sparse-checkout: |
           version.txt
         sparse-checkout-cone-mode: false
     - name: GH Release
-      uses: lime-actions/gh-release@latest
+      uses: lime-actions/gh-release@v1
       with:
         message: ${{ github.event.action != 'closed'
                      && 'Release candidate' || '' }}

@@ -6,8 +6,7 @@ on:
 
 jobs:
   create-pr:
-    if: github.event_name == 'workflow_call'
-        || inputs.head != github.event.repository.default_branch
+    if: github.ref_name != github.event.repository.default_branch
     runs-on: ubuntu-latest
     permissions:
        pull-requests: write
@@ -18,9 +17,9 @@ jobs:
       with:
         sparse-checkout: |
           action.yaml
-          version.txt
         sparse-checkout-cone-mode: false
     - name: Create PR from ${{ github.ref_name }}
       uses: ./
       with:
         version-from: 'version-file'
+        version-source: version.txt

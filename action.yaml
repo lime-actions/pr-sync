@@ -1,4 +1,5 @@
-name: PR from Version
+name: PR sync
+description: Creates a new PR or makes sure the title is conforming
 
 inputs:
   version-from:
@@ -102,14 +103,10 @@ runs:
       >> "$GITHUB_OUTPUT"
       echo "::endgroup::"
   - name: Checkout
-    if: steps.base.outputs.base == inputs.default-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.default-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
+    if: (steps.base.outputs.base == inputs.default-branch
+         || steps.base.outputs.base == inputs.release-candidate-branch )
+        && ( !steps.info.outputs.baseRefName
+            || steps.base.outputs.base == steps.info.outputs.baseRefName )
     uses: actions/checkout@v4
     with:
       sparse-checkout: |
@@ -117,15 +114,11 @@ runs:
       sparse-checkout-cone-mode: false
   - name: Get version
     id: get-version
-    if: steps.base.outputs.base == inputs.default-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.default-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && !steps.info.outputs.baseRefName
-        || steps.base.outputs.base == inputs.release-candidate-branch
-        && steps.base.outputs.base == steps.info.outputs.baseRefName
-    uses: lime-actions/version@latest
+    if: (steps.base.outputs.base == inputs.default-branch
+         || steps.base.outputs.base == inputs.release-candidate-branch )
+        && ( !steps.info.outputs.baseRefName
+            || steps.base.outputs.base == steps.info.outputs.baseRefName )
+    uses: lime-actions/version@v1
     with:
       from: ${{ inputs.version-from }}
       source: ${{ inputs.version-source }}
@@ -138,10 +131,10 @@ runs:
                       && format('v{0}', inputs.version
                                         || steps.get-version.outputs.version)
                       || steps.base.outputs.base == inputs.release-candidate-branch
-                      && format('RC v{0}', inputs.version
-                                           || steps.get-version.outputs.version)
-                      || steps.base.outputs.base == 'dev'
-                      && steps.base.outputs.base }}" \
+                      && format('RC v{0}',
+                            inputs.version || steps.get-version.outputs.version)
+                      || steps.base.outputs.base == inputs.dev-branch
+                      && inputs.head }}" \
       >> "$GITHUB_OUTPUT"
       echo "::endgroup::"
   - name: Debug and Create PR
